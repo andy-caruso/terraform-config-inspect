@@ -12,6 +12,7 @@ type Module struct {
 	RequiredCore      []string                        `json:"required_core,omitempty"`
 	RequiredProviders map[string]*ProviderRequirement `json:"required_providers"`
 
+	ProviderAliases  ProviderAliases        `json:"provider_aliases,omitempty"`
 	ManagedResources map[string]*Resource   `json:"managed_resources"`
 	DataResources    map[string]*Resource   `json:"data_resources"`
 	ModuleCalls      map[string]*ModuleCall `json:"module_calls"`
@@ -22,6 +23,25 @@ type Module struct {
 	Diagnostics Diagnostics `json:"diagnostics,omitempty"`
 }
 
+// ProviderAliases is a map between provider name (key)
+// and its alias names (values). It contains no entires
+// for providers without aliases.
+type ProviderAliases map[string][]string
+
+func (pa ProviderAliases) Add(name, alias string) {
+	if _, ok := pa[name]; !ok {
+		pa[name] = []string{alias}
+		return
+	}
+
+	for _, a := range pa[name] {
+		if a == alias {
+			return
+		}
+	}
+	pa[name] = append(pa[name], alias)
+}
+
 // NewModule creates new Module representing Terraform module at the given path
 func NewModule(path string) *Module {
 	return &Module{
@@ -29,6 +49,7 @@ func NewModule(path string) *Module {
 		Variables:         make(map[string]*Variable),
 		Outputs:           make(map[string]*Output),
 		RequiredProviders: make(map[string]*ProviderRequirement),
+		ProviderAliases:   make(ProviderAliases),
 		ManagedResources:  make(map[string]*Resource),
 		DataResources:     make(map[string]*Resource),
 		ModuleCalls:       make(map[string]*ModuleCall),

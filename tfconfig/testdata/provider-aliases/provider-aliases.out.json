@@ -1,0 +1,23 @@
+{
+  "path": "testdata/provider-aliases",
+  "variables": {},
+  "outputs": {},
+  "required_providers": {
+    "bar": {},
+    "baz": {},
+    "empty": {},
+    "foo": {}
+  },
+  "provider_aliases": {
+    "bar": [
+      "yellow"
+    ],
+    "foo": [
+      "blue",
+      "red"
+    ]
+  },
+  "managed_resources": {},
+  "data_resources": {},
+  "module_calls": {}
+}

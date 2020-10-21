@@ -214,6 +214,14 @@ func LoadModuleFromFile(file *hcl.File, mod *Module) hcl.Diagnostics {
 					mod.RequiredProviders[name].VersionConstraints = append(mod.RequiredProviders[name].VersionConstraints, version)
 				}
 			}
+			if attr, defined := content.Attributes["alias"]; defined {
+				var alias string
+				valDiags := gohcl.DecodeExpression(attr.Expr, nil, &alias)
+				diags = append(diags, valDiags...)
+				if !valDiags.HasErrors() && alias != "" {
+					mod.ProviderAliases.Add(name, alias)
+				}
+			}
 
 		case "resource", "data":
 
